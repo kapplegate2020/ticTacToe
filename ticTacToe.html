@@ -1,0 +1,383 @@
+<html>
+<head>
+	<title>Tic Tac Toe</title>
+	<style>
+		table, td{
+			border: 1px black solid;
+			border-collapse:collapse;
+		}
+		td{
+			width:100px;
+			text-align:center;
+		}
+		.ticTacToe{
+			height:100px;
+			font-size:80px;
+		}
+		.buttons{
+			height:30px;
+			font-size:20px;
+		}
+		table{
+			margin:auto;
+		}
+		#messageBox{
+			width:300px;
+			margin:auto;
+			font-size:40px;
+			height:80px;
+			text-align:center;
+		}
+		button{
+			display:none;
+		}
+		p{
+			display:block;
+			margin:0px;
+		}
+	</style>
+</head>
+<body>
+	<div id="messageBox">
+		<p id="message"></p>
+		<table>
+			<tr>
+				<td class="buttons">
+					<button onclick = "chooseFirst(true)" id="firstButton" >First</button>
+					<button onclick = "chooseDifficulty('easy')" id="easyButton">Easy</button>
+					<button onclick = "playAgain(true)" id="againButton">Yes</button>
+				</td>
+				<td class="buttons">
+					<button onclick = "chooseDifficulty('medium')" id="mediumButton">Medium</button>
+				</td>
+				<td class="buttons">
+					<button onclick = "chooseFirst(false)" id="secondButton">Second</button>
+					<button onclick = "chooseDifficulty('hard')" id="hardButton">Hard</button>
+					<button onclick = "playAgain(false)" id="notAgainButton">No</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<table>
+		<tr>
+			<td onclick="clicked(0,0)" class="ticTacToe" id="00"> </td>
+			<td onclick="clicked(0,1)" class="ticTacToe" id="01"> </td>
+			<td onclick="clicked(0,2)" class="ticTacToe" id="02"> </td>
+		</tr>
+		<tr>
+			<td onclick="clicked(1,0)" class="ticTacToe" id="10"> </td>
+			<td onclick="clicked(1,1)" class="ticTacToe" id="11"> </td>
+			<td onclick="clicked(1,2)" class="ticTacToe" id="12"> </td>
+		</tr>
+		<tr>
+			<td onclick="clicked(2,0)" class="ticTacToe" id="20"> </td>
+			<td onclick="clicked(2,1)" class="ticTacToe" id="21"> </td>
+			<td onclick="clicked(2,2)" class="ticTacToe" id="22"> </td>
+		</tr>
+	</table>
+	<script>
+		var places = [[0,0,0],[0,0,0],[0,0,0]];
+		var winningNumber = [3,12];
+		var isUserTurn = false;
+		var diffculty, userXorO, computerXorO;
+		
+		function chooseDifficulty(difficultyChosen){
+			//sets difficulty and clears buttons
+			difficulty = difficultyChosen;
+			document.getElementById("easyButton").style.display = "none";
+			document.getElementById("mediumButton").style.display = "none";
+			document.getElementById("hardButton").style.display = "none";
+			document.getElementById("message").innerHTML = "First or Second";
+			document.getElementById("firstButton").style.display = "inline";
+			document.getElementById("secondButton").style.display = "inline";
+		}
+		
+		function chooseFirst(firstChosen){
+			//clears buttons
+			document.getElementById("message").innerHTML = "Your Turn";
+			document.getElementById("firstButton").style.display = "none";
+			document.getElementById("secondButton").style.display = "none";
+			
+			//changes cursor of boxes
+			for(var i=0;i<3;i++){
+				for(var j=0;j<3;j++){
+					document.getElementById(""+i+j).style.cursor = "pointer";
+				}
+			}
+			
+			if(firstChosen){//sets user/computer variables and allows user to go
+				userXorO = 0;
+				computerXorO = 1;
+				isUserTurn = true;
+			}else{//sets user/computer variables and tells computer to move
+				userXorO = 1;
+				computerXorO = 0;
+				computerMove();
+			}
+		}
+		
+		function clicked(x, y){//when user clicks a square
+			if(isUserTurn){//if it is the users turn
+				var boxElement = document.getElementById(""+x+y);
+				if(boxElement.innerHTML == " "){//if it is an empty square
+					boxElement.innerHTML = "X";
+					boxElement.style.cursor = "default";
+					places[x][y] = 1;
+					if(checkGame(x, y, 0)){//checks if game is over
+						computerMove();//if not tells computer to move
+					}
+				}
+			}
+		}
+		
+		function checkGame(x, y, userOrComputer){
+			console.log(places);
+			//calculations for win
+			var sumX = 0;
+			var sumY = 0;
+			for(var i=0;i<3;i++){
+				sumX +=places[x][i];
+				sumY +=places[i][y];
+			}
+			var diagonal1 = places[0][0]+places[1][1]+places[2][2];
+			var diagonal2 = places[0][2]+places[1][1]+places[2][0];
+			var gameWinningNumber = winningNumber[userOrComputer];
+			
+			//calculations for tie
+			var placesSum = 0;
+			for(var i=0;i<3;i++){
+				for(var j=0;j<3;j++){
+					placesSum +=places[i][j];
+				}
+			}
+			
+			//checks the win
+			if(sumX == gameWinningNumber || sumY == gameWinningNumber || diagonal1== gameWinningNumber || diagonal2== gameWinningNumber ){
+				if(userOrComputer){
+					document.getElementById("message").innerHTML = "You Lose!";
+				}else{
+					document.getElementById("message").innerHTML = "You Win!";
+				}
+				
+				//sends restart message after 3 seconds
+				isUserTurn = false;
+				setTimeout(restart, 3000);
+				return false;
+			}
+			
+			//checks tie
+			else if(placesSum==21||placesSum==24){
+				document.getElementById("message").innerHTML = "You Tied!";
+				setTimeout(restart, 3000);
+				return false;
+			}
+			
+			//contines normal play 
+			else{
+				return true;
+			}
+		}
+		
+		function restart(){//asks user if wants to play again
+			document.getElementById("message").innerHTML = "Play Again?";
+			document.getElementById("againButton").style.display = "inline";
+			document.getElementById("notAgainButton").style.display = "inline";
+		}
+		
+		function playAgain(playAgainConfirmed){
+			if(playAgainConfirmed){
+				//resets variables
+				places = [[0,0,0],[0,0,0],[0,0,0]];
+				isUserTurn = false;
+				diffculty = null;
+				
+				//resets boxes
+				for(var i=0;i<3;i++){
+					for(var j=0;j<3;j++){
+						document.getElementById(""+i+j).innerHTML = " ";
+						document.getElementById(""+i+j).style.cursor = "pointer";
+					}
+				}
+				
+				//resets buttons
+				document.getElementById("againButton").style.display = "none";
+				document.getElementById("notAgainButton").style.display = "none";
+				document.getElementById("message").innerHTML = "Choose difficulty";
+				document.getElementById("easyButton").style.display = "inline";
+				document.getElementById("mediumButton").style.display = "inline";
+				document.getElementById("hardButton").style.display = "inline";
+			}else{
+				//thanks user for playing and removes buttons
+				document.getElementById("againButton").style.display = "none";
+				document.getElementById("notAgainButton").style.display = "none";
+				document.getElementById("message").innerHTML = "Thank you!";
+			}
+		}
+		
+		function computerMove(){
+			if(difficulty == "easy"){//move if diffiulty is easy (the bot selects a random available square)
+				var availableSpots = [];
+				for(var i=0;i<3;i++){
+					for(var j=0;j<3;j++){
+						if(places[i][j]==0){
+							availableSpots.push([i,j]);
+						}
+					}
+				}
+				var randomNumber = Math.floor(Math.random()*availableSpots.length);
+				computerClicked(availableSpots[randomNumber][0], availableSpots[randomNumber][1]);
+			}
+			
+			else if(difficulty == "medium"){
+				//counts available spots, and checks to see if there is a spot to block
+				var availableSpots = [];
+				var importantSpots = [];
+				for(var i=0;i<3;i++){
+					for(var j=0;j<3;j++){
+						if(wouldLose(i,j)){//counts places to block
+							importantSpots.push([i,j]);
+						}
+						if(places[i][j]==0){//counts available spots
+							availableSpots.push([i,j]);
+						}
+					}
+				}
+				
+				//if there is a spot to block, block it
+				if(importantSpots.length>0){
+					computerClicked(importantSpots[0][0], importantSpots[0][1]);
+				}
+				//if not, choose randomly
+				else{
+					var randomNumber = Math.floor(Math.random()*availableSpots.length);
+					computerClicked(availableSpots[randomNumber][0], availableSpots[randomNumber][1]);
+				}
+			}
+			
+			else{//hard difficulty
+				//checks spots to win, block, and available spots
+				var spotsToWin = [];
+				var spotsToBlock = [];
+				var availableSpots = [];
+				for(var i=0;i<3;i++){
+					for(var j=0;j<3;j++){
+						if(wouldWin(i,j)){//counts places to win
+							spotsToWin.push([i,j]);
+						}
+						if(wouldLose(i,j)){//counts places to block
+							spotsToBlock.push([i,j]);
+						}
+						if(places[i][j]==0){//counts available spots
+							availableSpots.push([i,j]);
+						}
+					}
+				}
+				
+				//on first move, take the corner
+				if(availableSpots.length == 9){
+					computerClicked(0,0);
+				}
+				//on second move, take the middle (if available)
+				else if(availableSpots.length == 8 && places[1][1] == 0){
+					computerClicked(1,1);
+				}
+				//take a spot that will win the game (if possible)
+				else if(spotsToWin.length>0){//if there is a spot to block, block it
+					computerClicked(spotsToWin[0][0], spotsToWin[0][1]);
+				}
+				//block the opponent from winning (if needed)
+				else if(spotsToBlock.length>0){//if there is a spot to block, block it
+					computerClicked(spotsToBlock[0][0], spotsToBlock[0][1]);
+				}
+				//if not, choose randomly
+				else{
+					var randomNumber = Math.floor(Math.random()*availableSpots.length);
+					computerClicked(availableSpots[randomNumber][0], availableSpots[randomNumber][1]);
+				}
+			}
+		}
+		
+		function wouldLose(x,y){//checks if given space needs to be blocked
+			if (places[x][y]==0){
+				//makes copy of places variable
+				var placesCopy = [[],[],[]];
+				for(var i=0;i<3;i++){
+					for(var j=0;j<3;j++){
+						placesCopy[i][j] = places[i][j];
+					}
+				}
+				
+				//adds this theorical location and does the calculations
+				placesCopy[x][y] = 1;
+				var sumX = 0;
+				var sumY = 0;
+				for(var i=0;i<3;i++){
+					sumX +=placesCopy[x][i];
+					sumY +=placesCopy[i][y];
+				}
+				var diagonal1 = placesCopy[0][0]+placesCopy[1][1]+placesCopy[2][2];
+				var diagonal2 = placesCopy[0][2]+placesCopy[1][1]+placesCopy[2][0];
+				var gameWinningNumber = winningNumber[0];
+				
+				//returns true or false if this space needs to be blocked
+				if(sumX == gameWinningNumber || sumY == gameWinningNumber || diagonal1== gameWinningNumber || diagonal2== gameWinningNumber ){
+					return true;
+				}else{
+					return false;
+				}
+			}else{
+				return false;
+			}
+		}
+		
+		function wouldWin(x,y){//checks if given space would win the game
+			if (places[x][y]==0){
+				//makes copy of places variable
+				var placesCopy = [[],[],[]];
+				for(var i=0;i<3;i++){
+					for(var j=0;j<3;j++){
+						placesCopy[i][j] = places[i][j];
+					}
+				}
+				
+				//adds this theorical location and does the calculations
+				placesCopy[x][y] = 4;
+				var sumX = 0;
+				var sumY = 0;
+				for(var i=0;i<3;i++){
+					sumX +=placesCopy[x][i];
+					sumY +=placesCopy[i][y];
+				}
+				var diagonal1 = placesCopy[0][0]+placesCopy[1][1]+placesCopy[2][2];
+				var diagonal2 = placesCopy[0][2]+placesCopy[1][1]+placesCopy[2][0];
+				var gameWinningNumber = winningNumber[1];
+				
+				//returns true or false if this space could win the game
+				if(sumX == gameWinningNumber || sumY == gameWinningNumber || diagonal1== gameWinningNumber || diagonal2== gameWinningNumber ){
+					return true;
+				}else{
+					return false;
+				}
+			}else{
+				return false;
+			}
+		}
+		
+		function computerClicked(x, y){//does the computer move, and allows the user to go
+			var boxElement = document.getElementById(""+x+y);
+			boxElement.innerHTML = "O";
+			boxElement.style.cursor = "default";
+			places[x][y] = 4;
+			if(checkGame(x, y, 1)){
+				isUserTurn = true;
+			}
+		}
+		
+		//sets the buttons on startup
+		document.getElementById("message").innerHTML = "Choose difficulty";
+		document.getElementById("easyButton").style.display = "inline";
+		document.getElementById("mediumButton").style.display = "inline";
+		document.getElementById("hardButton").style.display = "inline";
+	</script>
+</body>
+</html>
