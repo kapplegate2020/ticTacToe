@@ -1,0 +1,8 @@
+Here is my submission for the programming challenge
+It was completed in 3 hours and 30 minutes
+If I had more time, I would improve the hard mode setting to analyze a few moves ahead instead of just one
+I would also improve the gui - make sure it is usable on many different screen sizes, make the buttons look better, etc
+I added notes to assist an outside reader to understand what is going on
+To calculate if someone won faster, every X is given a value of 1, and every O is given a value of 4. Thus the sums of 3 and 12 can only be achieved by 3 in a row
+
+-Kenny Applegate

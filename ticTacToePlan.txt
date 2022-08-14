@@ -1,0 +1,9 @@
+Tic Tac Toe
+Kenny Applegate
+
+Plan:
+1 create the Gui
+2 add functionality to place X and O
+3 add game over checks
+4 add start game and end game functions
+5 add computer ai
